@@ -1,0 +1,1 @@
+{"name":"rocket-mobile","version":"1.0.0","private":true,"scripts":{"postinstall":"cp node_modules/three/build/three.min.js www/three.min.js"},"dependencies":{"@capacitor/android":"^6.1.0","@capacitor/cli":"^6.1.0","@capacitor/core":"^6.1.0","three":"0.128.0"}}

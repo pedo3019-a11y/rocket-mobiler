@@ -1,0 +1,7 @@
+GERAR O APK (sem PC, pelo GitHub)
+1) Crie um repositorio no GitHub e envie TODOS estes arquivos (inclusive a pasta .github).
+2) Aba Actions > Build APK > Run workflow. Espere ~5 min.
+3) Baixe "rocket-mobile-apk" no fim da execucao, extraia e instale o app-debug.apk (permita fontes desconhecidas).
+
+NO PC: npm install && npx cap add android && npx cap sync && npx cap open android (Android Studio > Build APK).
+ONLINE: um jogador cria sala, manda o codigo ao amigo (mesmo Wi-Fi), o amigo devolve a resposta, e o host inicia.
