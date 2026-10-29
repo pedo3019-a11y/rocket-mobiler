@@ -36,10 +36,20 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
+          
+- name: Compilar APK
+  working-directory: android
+  run: chmod +x gradlew && ./gradlew assembleDebug
+  
+  - name: Localizar APK
+  run: find android -type f -name "*.apk"
 
-      - name: Compilar APK
-        working-directory: android
-        run: chmod +x gradlew && ./gradlew assembleDebug
+- name: Disponibilizar APK
+  uses: actions/upload-artifact@v4
+  with:
+    name: nova-boost-debug-apk
+    path: android/**/*.apk
+    if-no-files-found: error
         
 - name: Disponibilizar APK
   uses: actions/upload-artifact@v4
