@@ -1,1 +1,15 @@
-{"name":"rocket-mobile","version":"1.0.0","private":true,"scripts":{"postinstall":"cp node_modules/three/build/three.min.js www/three.min.js"},"dependencies":{"@capacitor/android":"^6.1.0","@capacitor/cli":"^6.1.0","@capacitor/core":"^6.1.0","three":"0.128.0"}}
+{
+"name": "nova-boost",
+"version": "1.0.0",
+"private": true,
+"description": "NOVA BOOST - Monitor de desempenho",
+"scripts": {
+"build": "npx cap sync android"
+},
+"dependencies": {
+"@capacitor/core": "^6.2.1"
+},
+"devDependencies": {
+"@capacitor/cli": "^6.2.1"
+}
+}
