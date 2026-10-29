@@ -1,31 +1,71 @@
-name: Build Crystal APK
+name: Build NOVA BOOST APK
+
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches:
+      - main
+
+permissions:
+  contents: read
+
 jobs:
-  apk:
+  build:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: {node-version: 20}
-      - uses: actions/setup-java@v4
-        with: {distribution: temurin, java-version: 17}
-      - name: Preparar app
-        run: |
-          mkdir -p app/www
-          cp www/index.html app/www/index.html
-          cd app
-          npm init -y
-          npm install @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6
-          echo '{"appId":"com.crystal.game","appName":"Crystal","webDir":"www"}' > capacitor.config.json
-          npx cap add android
-          sed -i 's/android:name="\.MainActivity"/android:name=".MainActivity" android:screenOrientation="portrait"/' android/app/src/main/AndroidManifest.xml
-          npx cap sync android
-      - name: Gerar APK
-        run: cd app/android && chmod +x gradlew && ./gradlew assembleDebug
-      - uses: actions/upload-artifact@v4
+      - name: Baixar código do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
         with:
-          name: crystal-apk
-          path: app/android/app/build/outputs/apk/debug/app-debug.apk
+          node-version: 20
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm install
+
+      - name: Adicionar plataforma Android
+        run: npx cap add android
+
+      - name: Sincronizar arquivos HTML
+        run: npx cap sync android
+
+      - name: Configurar Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Compilar APK
+        working-directory: android
+        run: chmod +x gradlew && ./gradlew assembleDebug
+
+      - name: Disponibilizar APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: nova-boost-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+
+### 📂 Estrutura necessária no GitHub
+
+Confere se os arquivos estão organizados assim:
+
+```text
+seu-repositorio/
+├── .github/
+│   └── workflows/
+│       └── android-apk.yml
+├── www/
+│   └── index.html
+├── package.json
+└── capacitor.config.json
+
+⚠️ Atenção
+
+O workflow precisa que o "package.json" contenha as dependências do Capacitor. Além disso, o comando "npx cap add android" só funciona se a configuração do projeto estiver correta.
+
+Para compilar: abre a aba Actions do repositório, seleciona "Build NOVA BOOST APK" e toca em Run workflow. Quando terminar, baixa o artefato "nova-boost-debug-apk".
+
+Se aparecer algum erro vermelho no GitHub Actions, manda uma captura de tela que te ajudo a corrigir. 🔧
