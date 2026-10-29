@@ -1,1 +1,6 @@
-{"appId":"com.rocketmobile.game","appName":"Rocket Mobile","webDir":"www"}
+{
+"appId": "com.novaboost.app",
+"appName": "NOVA BOOST",
+"webDir": "www",
+"bundledWebRuntime": false
+}
