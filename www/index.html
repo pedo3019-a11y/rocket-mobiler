@@ -1,76 +1,37 @@
-<!doctype html>
-<html lang="pt-BR">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="theme-color" content="#080d18">
-<title>NOVA BOOST</title>
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8"><title>Gerador de Níveis GD</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>
-:root{--bg:#080d18;--card:#111b2b;--line:#263952;--cyan:#48e7ff;--blue:#6f8cff;--green:#69f0ae;--muted:#95a7c0;--white:#f2f7ff}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 10% 0%,#18365a 0,transparent 42%),var(--bg);color:var(--white);font-family:system-ui,-apple-system,Roboto,Arial,sans-serif;min-height:100vh}
-header{padding:24px 18px 14px;max-width:760px;margin:auto}.brand{display:flex;align-items:center;gap:12px}.logo{width:46px;height:46px;border-radius:15px;background:linear-gradient(135deg,var(--cyan),var(--blue));color:#07111e;font-weight:1000;display:grid;place-items:center;font-size:22px;box-shadow:0 0 25px #48e7ff33}h1{font-size:21px;letter-spacing:1.6px;margin:0}.sub{color:var(--muted);font-size:12px;margin-top:4px}.badge{margin-left:auto;color:var(--green);font-size:10px;border:1px solid #315c55;padding:7px 9px;border-radius:30px;font-weight:800}
-main{max-width:760px;margin:auto;padding:8px 14px 100px}.hero{border:1px solid #2a4564;background:linear-gradient(120deg,#14263bee,#0d1523ee);border-radius:22px;padding:20px;overflow:hidden}.eyebrow{font-size:10px;letter-spacing:2px;color:var(--cyan);font-weight:900}.hero h2{font-size:25px;margin:8px 0}.hero p{font-size:13px;line-height:1.55;color:var(--muted);margin:0}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:17px}button{border:0;font-weight:800;cursor:pointer;font-size:12px}.btn{padding:12px 14px;border-radius:12px}.primary{background:linear-gradient(100deg,var(--cyan),#9caaff);color:#07111e}.secondary{background:#1b2a40;border:1px solid #314966;color:var(--white)}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin-top:13px}.card{border:1px solid var(--line);background:linear-gradient(145deg,#121e2f,#0c1421);border-radius:18px;padding:15px;min-width:0}.cardhead{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:12px}.icon{font-size:18px}.value{font-size:29px;font-weight:850;letter-spacing:-1px;margin-top:13px}.unit{font-size:12px;color:var(--muted);font-weight:600;letter-spacing:0}.note{font-size:11px;color:var(--muted);margin-top:7px}.bar{height:6px;border-radius:9px;background:#26354a;margin-top:12px;overflow:hidden}.fill{height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--blue));border-radius:9px;transition:width .5s}
-.sectiontitle{font-size:14px;margin:23px 3px 10px}.tools{display:grid;gap:10px}.tool{display:flex;align-items:center;gap:12px;border:1px solid var(--line);background:var(--card);border-radius:16px;padding:14px}.tool .symbol{width:40px;height:40px;display:grid;place-items:center;background:#1b2d44;border-radius:12px;font-size:20px}.tool strong{display:block;font-size:13px}.tool small{display:block;color:var(--muted);font-size:11px;margin-top:4px;line-height:1.4}.tool button{margin-left:auto;flex-shrink:0}.recommend{border:1px solid #315c55;background:#102820;border-radius:16px;padding:15px;margin-top:12px}.recommend strong{color:var(--green);font-size:13px}.recommend p{color:#b4d8c8;font-size:12px;line-height:1.5;margin:7px 0 0}.nav{position:fixed;bottom:0;left:0;right:0;background:#090f1bed;backdrop-filter:blur(16px);border-top:1px solid #25344b;display:flex;justify-content:center;gap:8px;padding:10px 10px calc(10px + env(safe-area-inset-bottom));z-index:4}.nav button{background:transparent;color:var(--muted);padding:8px 12px;border-radius:10px}.nav button.active{color:var(--cyan);background:#172b40}.toast{position:fixed;left:50%;bottom:85px;transform:translateX(-50%);background:#eafaff;color:#07111e;border-radius:12px;padding:11px 15px;font-size:12px;font-weight:800;opacity:0;pointer-events:none;transition:opacity .2s;z-index:10;max-width:90%;text-align:center}.toast.show{opacity:1}.fineprint{color:#7386a1;font-size:10px;line-height:1.5;margin:18px 3px}
-@media(min-width:600px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}.value{font-size:25px}}
-</style>
-</head>
-<body>
-<header><div class="brand"><div class="logo">N</div><div><h1>NOVA BOOST</h1><div class="sub">PAINEL DE DESEMPENHO GAMER</div></div><div class="badge">ANDROID READY</div></div></header>
-<main>
-<section class="hero"><div class="eyebrow">PERFORMANCE CENTER</div><h2>Seu jogo. Seus dados. 🎮</h2><p>Monitore as informações disponíveis no aparelho e use recomendações práticas para melhorar a experiência de jogo.</p><div class="actions"><button class="btn primary" id="refresh">↻ Atualizar painel</button><button class="btn secondary" id="tips">⚡ Dicas de otimização</button></div></section>
-<div class="grid">
-<div class="card"><div class="cardhead"><span>🔋 Bateria</span><span class="icon">◉</span></div><div class="value" id="battery">--<span class="unit"> %</span></div><div class="note" id="charging">Consultando sistema…</div><div class="bar"><div class="fill" id="batterybar"></div></div></div>
-<div class="card"><div class="cardhead"><span>🧠 Memória</span><span class="icon">▥</span></div><div class="value" id="memory">--<span class="unit"> MB</span></div><div class="note">Memória desta página, não a RAM total do Android</div><div class="bar"><div class="fill" id="memorybar"></div></div></div>
-<div class="card"><div class="cardhead"><span>📶 Conexão</span><span class="icon">⌁</span></div><div class="value" id="network">--</div><div class="note" id="networknote">Estado da conexão</div></div>
-<div class="card"><div class="cardhead"><span>⏱️ FPS do painel</span><span class="icon">◷</span></div><div class="value" id="fps">--<span class="unit"> FPS</span></div><div class="note">FPS desta interface, não do Minecraft</div></div>
-</div>
-<h3 class="sectiontitle">Ferramentas rápidas</h3>
-<div class="tools">
-<div class="tool"><div class="symbol">🧊</div><div><strong>Reduzir aquecimento</strong><small>Feche o jogo e deixe o celular esfriar se estiver quente. Evite jogar carregando.</small></div><button class="btn secondary" data-toast="Dica: pause o jogo e deixe o aparelho esfriar.">Ver dica</button></div>
-<div class="tool"><div class="symbol">🎮</div><div><strong>Perfil Minecraft</strong><small>Comece com 6 chunks, gráficos rápidos e shaders desligados; aumente aos poucos.</small></div><button class="btn secondary" data-toast="Sugestão: 6 chunks, gráficos rápidos e shaders desligados.">Aplicar dica</button></div>
-<div class="tool"><div class="symbol">🧹</div><div><strong>Preparar sessão</strong><small>Mostra uma lista segura antes de abrir o jogo. Não encerra aplicativos automaticamente.</small></div><button class="btn secondary" id="session">Preparar</button></div>
-</div>
-<div class="recommend" id="recommend"><strong>⚡ Recomendação inteligente</strong><p>Para o Moto G32, teste uma alteração por vez. Reduzir a resolução e a distância de renderização costuma ser um bom primeiro passo.</p></div>
-<p class="fineprint">Limitações do Android: um site ou app WebView não consegue ler diretamente o FPS do Minecraft, a temperatura da CPU ou a RAM total sem permissões e integrações nativas específicas. Os valores mostrados aqui são apenas os dados que o navegador permite consultar. Este app não faz overclock nem encerra processos do sistema.</p>
-</main>
-<nav class="nav"><button class="active" data-tab="home">⌂ Início</button><button data-tab="monitor">◉ Monitor</button><button data-tab="boost">⚡ Otimização</button><button data-tab="about">ⓘ Sobre</button></nav>
-<div class="toast" id="toast"></div>
-<script>
-const $=id=>document.getElementById(id);
-function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400)}
-function refresh(){
-  if(performance && performance.memory){
-    const mb=Math.round(performance.memory.usedJSHeapSize/1048576);
-    $('memory').innerHTML=mb+'<span class="unit"> MB</span>';
-    $('memorybar').style.width=Math.min(100,mb/10)+'%';
-  }else{$('memory').innerHTML='N/D';$('memorybar').style.width='0%'}
-  const online=navigator.onLine;
-  $('network').textContent=online?'Online':'Offline';
-  $('network').style.color=online?'var(--green)':'var(--yellow)';
-  $('networknote').textContent=navigator.connection?.effectiveType ? 'Tipo: '+navigator.connection.effectiveType : 'Estado informado pelo navegador';
-  if(navigator.getBattery){
-    navigator.getBattery().then(b=>{
-      const pct=Math.round(b.level*100);
-      $('battery').innerHTML=pct+'<span class="unit"> %</span>';
-      $('batterybar').style.width=pct+'%';
-      $('charging').textContent=b.charging?'Carregando':'Não está carregando';
-    }).catch(()=>{$('battery').innerHTML='N/D';$('charging').textContent='Informação indisponível'});
-  }else{$('battery').innerHTML='N/D';$('charging').textContent='Não suportado neste navegador'}
-}
-let frames=0,last=performance.now();
-function tick(now){frames++;if(now-last>=1000){$('fps').innerHTML=frames+'<span class="unit"> FPS</span>';frames=0;last=now}requestAnimationFrame(tick)}
-$('refresh').addEventListener('click',()=>{refresh();toast('Painel atualizado')});
-$('tips').addEventListener('click',()=>{$('recommend').scrollIntoView({behavior:'smooth',block:'center'});toast('Dicas de otimização abaixo')});
-$('session').addEventListener('click',()=>toast('Antes de jogar: feche apps não usados, confira o espaço livre e deixe o aparelho esfriar.'));
-document.querySelectorAll('[data-toast]').forEach(b=>b.addEventListener('click',()=>toast(b.dataset.toast)));
-document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',()=>{
- document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));b.classList.add('active');
- if(b.dataset.tab==='monitor')document.querySelector('.grid').scrollIntoView({behavior:'smooth',block:'start'});
- else if(b.dataset.tab==='boost')document.querySelector('.tools').scrollIntoView({behavior:'smooth',block:'start'});
- else if(b.dataset.tab==='about')document.querySelector('.fineprint').scrollIntoView({behavior:'smooth',block:'center'});
- else window.scrollTo({top:0,behavior:'smooth'});
-}));
-refresh();requestAnimationFrame(tick);setInterval(refresh,15000);
-</script>
-</body></html>
+:root{--bg:#f4f1fb;--card:#fff;--tx:#1b1530;--mu:#6b6485;--ac:#7a2cff;--bd:#ddd6ee;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#120c24;--card:#1c1438;--tx:#f1ecff;--mu:#a99fcc;--ac:#a46bff;--bd:#33285c}}
+:root[data-theme="dark"]{--bg:#120c24;--card:#1c1438;--tx:#f1ecff;--mu:#a99fcc;--ac:#a46bff;--bd:#33285c}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;padding:14px;max-width:640px;margin-inline:auto}
+h1{font-size:20px;margin:4px 0 12px}h2{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--mu);margin:0 0 8px}
+.c{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:12px;margin-bottom:12px}
+label{display:block;font-size:12px;color:var(--mu);margin:8px 0 3px}
+input,select,button{font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:9px;width:100%}
+input[type=color]{padding:2px;height:38px}input[type=range]{padding:0;accent-color:var(--ac)}input[type=checkbox]{width:auto}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.g5{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}.chips button{width:auto;padding:6px 11px;border-radius:99px;font-size:13px}
+.cb{display:flex;flex-wrap:wrap;gap:12px;margin-top:6px}.cb label{display:flex;gap:6px;align-items:center;margin:0;color:var(--tx);font-size:14px}
+.pri{background:var(--ac);color:#fff;border:0;font-weight:600;padding:12px}
+.pv{overflow-x:auto;border-radius:10px;border:1px solid var(--bd)}canvas{display:block}#vz{width:100%;height:auto;border-radius:10px}
+#info{font-size:13px;color:var(--mu);margin-top:8px}#msg{font-size:13px;margin-top:6px;min-height:18px}
+</style></head><body>
+<h1>🎮 Gerador de Níveis – Geometry Dash</h1>
+
+<div class="c"><h2>Nível</h2>
+<label>Nome</label><input id="name" value="Meu Nível Neon" maxlength="20">
+<div class="g2"><div><label>Criador</label><input id="creator" value="Player" maxlength="20"></div>
+<div><label>ID da música (opcional)</label><input id="song" type="number" placeholder="ex: 467339"></div></div>
+<label>Descrição</label><input id="desc" value="Nível gerado automaticamente" maxlength="140"></div>
+
+<div class="c"><h2>Música e sintonia</h2><label>Música oficial do jogo</label><select id="osong"></select><div class="g2" style="margin-top:8px"><button id="tap">👆 Tocar no ritmo</button><div><label style="margin:0">1ª batida (ms)</label><input id="off" type="number" value="0"></div></div><div style="font-size:12px;color:var(--mu);margin-top:6px">Obstáculos, seções e efeitos caem nas batidas do BPM (campo BPM em Tema). Toque 4+ vezes no ritmo da música para calibrar.</div><button id="po" class="pri" style="margin-top:8px">❄ Preset: Dry Out neve 3D</button></div>
+<div class="c"><h2>Tema</h2>
+<div class="chips" id="presets"></div>
+<div class="g5" style="margin-top:10px">
+<div><label>Fundo</label><input type="color" id="c_bg"></div><div><label>Chão</label><input type="color" id="c_ground"></div>
+<div><label>Linha</label><input type="color" id="c_line"></div><div><label>Blocos</label><input type="color" id="c_obj"></div>
+<div><label>Destaque</label><input type="color" id="c_acc"></div></div>
+<div class="g2"><div><label>Textura do fundo (1-20)</label><input id="bgtex" type="number" min="1" max="20" value="1"></div>
