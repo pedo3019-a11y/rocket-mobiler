@@ -1,0 +1,75 @@
+name: Build APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, master]
+    paths: [index.html, .github/workflows/build-apk.yml]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Preparar o app web
+        run: |
+          mkdir -p www
+          cp index.html www/index.html
+          cat > www/shim.js <<'EOF'
+          (function(){
+            var C=window.Capacitor;
+            if(!C||!C.Plugins)return;
+            window.claude={use:async function(n){
+              if(n!=='downloads')return null;
+              return{save:async function(o){
+                var b64=await new Promise(function(res,rej){
+                  var f=new FileReader();
+                  f.onload=function(){res(String(f.result).split(',')[1])};
+                  f.onerror=rej;
+                  f.readAsDataURL(o.data);
+                });
+                var FS=C.Plugins.Filesystem,SH=C.Plugins.Share;
+                try{
+                  await FS.writeFile({path:'GDLevels/'+o.filename,data:b64,directory:'DOCUMENTS',recursive:true});
+                  alert('Salvo em Documentos/GDLevels/'+o.filename);
+                  return;
+                }catch(e){}
+                var w=await FS.writeFile({path:o.filename,data:b64,directory:'CACHE'});
+                await SH.share({title:o.filename,url:w.uri,dialogTitle:'Salvar '+o.filename});
+              }};
+            }};
+          })();
+          EOF
+          sed -i 's#<head>#<head><script src="shim.js"></script>#' www/index.html
+
+      - name: Instalar Capacitor e criar projeto Android
+        run: |
+          npm init -y
+          npm i @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6 @capacitor/filesystem@6 @capacitor/share@6
+          cat > capacitor.config.json <<'EOF'
+          {"appId":"com.gdlevelmaker.app","appName":"GD Level Maker","webDir":"www"}
+          EOF
+          npx cap add android
+          npx cap sync android
+
+      - name: Compilar APK
+        run: |
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GD-Level-Maker-APK
+          path: android/app/build/outputs/apk/debug/app-debug.apk
