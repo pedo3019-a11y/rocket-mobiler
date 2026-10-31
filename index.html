@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8"><title>Gerador de Níveis GD</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{--bg:#f4f1fb;--card:#fff;--tx:#1b1530;--mu:#6b6485;--ac:#7a2cff;--bd:#ddd6ee;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#120c24;--card:#1c1438;--tx:#f1ecff;--mu:#a99fcc;--ac:#a46bff;--bd:#33285c}}
+:root[data-theme="dark"]{--bg:#120c24;--card:#1c1438;--tx:#f1ecff;--mu:#a99fcc;--ac:#a46bff;--bd:#33285c}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;padding:14px;max-width:640px;margin-inline:auto}
+h1{font-size:20px;margin:4px 0 12px}h2{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--mu);margin:0 0 8px}
+.c{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:12px;margin-bottom:12px}
+label{display:block;font-size:12px;color:var(--mu);margin:8px 0 3px}
+input,select,button{font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:9px;width:100%}
+input[type=color]{padding:2px;height:38px}input[type=range]{padding:0;accent-color:var(--ac)}input[type=checkbox]{width:auto}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.g5{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}.chips button{width:auto;padding:6px 11px;border-radius:99px;font-size:13px}
+.cb{display:flex;flex-wrap:wrap;gap:12px;margin-top:6px}.cb label{display:flex;gap:6px;align-items:center;margin:0;color:var(--tx);font-size:14px}
+.pri{background:var(--ac);color:#fff;border:0;font-weight:600;padding:12px}
+.pv{overflow-x:auto;border-radius:10px;border:1px solid var(--bd)}canvas{display:block}#vz{width:100%;height:auto;border-radius:10px}
+#info{font-size:13px;color:var(--mu);margin-top:8px}#msg{font-size:13px;margin-top:6px;min-height:18px}
+</style></head><body>
+<h1>🎮 Gerador de Níveis – Geometry Dash</h1>
+
+<div class="c"><h2>Nível</h2>
+<label>Nome</label><input id="name" value="Meu Nível Neon" maxlength="20">
+<div class="g2"><div><label>Criador</label><input id="creator" value="Player" maxlength="20"></div>
+<div><label>ID da música (opcional)</label><input id="song" type="number" placeholder="ex: 467339"></div></div>
+<label>Descrição</label><input id="desc" value="Nível gerado automaticamente" maxlength="140"></div>
+
+<div class="c"><h2>Música e sintonia</h2><label>Música oficial do jogo</label><select id="osong"></select><div class="g2" style="margin-top:8px"><button id="tap">👆 Tocar no ritmo</button><div><label style="margin:0">1ª batida (ms)</label><input id="off" type="number" value="0"></div></div><div style="font-size:12px;color:var(--mu);margin-top:6px">Obstáculos, seções e efeitos caem nas batidas do BPM (campo BPM em Tema). Toque 4+ vezes no ritmo da música para calibrar.</div><button id="po" class="pri" style="margin-top:8px">❄ Preset: Dry Out neve 3D</button></div>
+<div class="c"><h2>Tema</h2>
+<div class="chips" id="presets"></div>
+<div class="g5" style="margin-top:10px">
+<div><label>Fundo</label><input type="color" id="c_bg"></div><div><label>Chão</label><input type="color" id="c_ground"></div>
+<div><label>Linha</label><input type="color" id="c_line"></div><div><label>Blocos</label><input type="color" id="c_obj"></div>
+<div><label>Destaque</label><input type="color" id="c_acc"></div></div>
+<div class="g2"><div><label>Textura do fundo (1-20)</label><input id="bgtex" type="number" min="1" max="20" value="1"></div>
+<div><label>Textura do chão (1-20)</label><input id="gtex" type="number" min="1" max="20" value="1"></div></div>
+<div id="aibox" style="display:none"><label>Ou descreva um tema e o Claude cria a paleta</label>
+<div class="g2" style="grid-template-columns:1fr auto"><input id="aitxt" placeholder="ex: Marte ao pôr do sol"><button id="aibtn" style="width:auto">✨ Criar</button></div></div>
+<div class="g2"><div><label>Decoração</label><select id="deco"><option value="0">Nenhuma</option><option value="1">Leve</option><option value="2">Média</option><option value="3" selected>Pesada</option></select></div><div><label>BPM (pulso no ritmo, 0 = off)</label><input id="bpm" type="number" min="0" max="300" value="128"></div></div><div class="cb"><label><input type="checkbox" id="shift" checked> Mudar as cores a cada seção</label><label><input type="checkbox" id="d3" checked> 3D falso (parallax + câmera)</label></div></div>
+
+<div class="c"><h2>Jogabilidade</h2>
+<label>Duração: <b id="secv">45</b> s</label><input type="range" id="sec" min="15" max="120" value="45">
+<label>Dificuldade: <b id="dv">2</b> / 5</label><input type="range" id="diff" min="1" max="5" value="2">
+<div class="g2"><div><label>Velocidade</label><select id="speed"><option value="0.5">0.5x (lenta)</option><option value="1" selected>1x</option><option value="2">2x</option><option value="3">3x</option><option value="4">4x</option></select></div>
+<div><label>Seed</label><div style="display:flex;gap:6px"><input id="seed" value="neon"><button id="dice" style="width:auto">🎲</button></div></div></div>
+<label>Modos extras (cubo sempre incluso)</label>
+<div class="cb"><label><input type="checkbox" class="m" value="ship" checked> Nave</label><label><input type="checkbox" class="m" value="ball"> Bola</label><label><input type="checkbox" class="m" value="ufo"> UFO</label><label><input type="checkbox" class="m" value="wave"> Wave</label><label><input type="checkbox" class="m" value="robot"> Robô</label><label><input type="checkbox" class="m" value="spider"> Aranha</label><label><input type="checkbox" class="m" value="swing"> Swing</label></div></div>
+
+<div class="c"><h2>Visualizador</h2><canvas id="vz" width="360" height="200"></canvas><div class="g2" style="grid-template-columns:auto 1fr;margin:8px 0"><button id="pp" style="width:auto">⏸ Pausar</button><input type="range" id="scr" min="0" max="1000" value="0"></div><h2>Mapa</h2><div class="pv"><canvas id="cv"></canvas></div><div id="info"></div>
+<button class="pri" id="gen" style="margin-top:10px">Gerar nível</button>
+<button class="pri" id="dl" style="margin-top:8px">⬇ Baixar .gdlvl</button><button id="dlapp" style="margin-top:8px">⬇ Baixar este app (HTML): salva o .gdlvl direto</button><div id="msg"></div></div>
+
+<script>
+const $=s=>document.querySelector(s),B=30;
+const SP={'0.5':251.16,'1':311.58,'2':387.42,'3':468,'4':576},KA4={'0.5':1,'1':0,'2':2,'3':3,'4':4};
+const PID={cube:12,ship:13,ball:47,ufo:111,wave:660,robot:745,spider:1331,swing:1933};
+const T={'Neon Roxo':['#1a0533','#2d0a5e','#ff3df2','#7a2cff','#00f0ff'],'Vulcão':['#2b0a05','#4a1208','#ff7a1a','#c4260c','#ffd23d'],
+'Oceano':['#03213d','#06406b','#4dd8ff','#0e8fd6','#b8fff2'],'Floresta':['#0b2214','#14401f','#9dff6a','#2a9d4a','#f4ff7a'],
+'Gelo':['#0c2a3a','#16475f','#e8fbff','#6fd0f0','#ffffff'],'Pôr do Sol':['#3a0f2e','#5a1a3a','#ffb347','#ff5e78','#ffe08a'],
+'Cyber':['#06060f','#101030','#00ff9c','#ff2e88','#00e5ff']};
+const K=['bg','ground','line','obj','acc'];let STY='city';const SM={'Neon Roxo':'city','Vulcão':'mount','Oceano':'sea','Floresta':'tree','Gelo':'snow','Pôr do Sol':'mount','Cyber':'city'};
+const setTheme=a=>K.forEach((k,i)=>$('#c_'+k).value=a[i]);
+const getTheme=()=>Object.fromEntries(K.map(k=>[k,$('#c_'+k).value]));
+for(const n in T){const b=document.createElement('button');b.textContent=n;b.onclick=()=>{setTheme(T[n]);STY=SM[n];run()};$('#presets').append(b)}
+setTheme(T['Neon Roxo']);
+const h2r=h=>[1,3,5].map(i=>parseInt(h.substr(i,2),16));
+const mix=(a,b,t)=>{const x=h2r(a),y=h2r(b);return x.map((v,i)=>Math.round(v+(y[i]-v)*t))};
+const hash=s=>{let h=2166136261;for(const c of s){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0};
+const rng=a=>()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+
+function gen(){
+ const th=getTheme(),d=+$('#diff').value,spd=$('#speed').value,sp=SP[spd],sf=sp/311.58,len=+$('#sec').value*sp;
+ const R=rng(hash($('#seed').value||'x')),ri=(a,b)=>a+Math.floor(R()*(b-a+1));
+ const modes=[...document.querySelectorAll('.m:checked')].map(e=>e.value),objs=[];
+ const add=(id,x,y,r=0,ex='')=>objs.push({id,x:Math.round(x),y:Math.round(y),r,ex});
+ const bt=sp*60/(+$('#bpm').value||120),off=(+$('#off').value||0)/1000*sp,sn=(x,n=1)=>{const u=bt*n;return off+Math.ceil((x-off)/u-1e-6)*u},sc=Math.max(1,sf*.9),gap=()=>(Math.max(5,10-d*1.2)+R()*3)*B*sc;
+ const cp=[
+  x=>{add(8,x,15);return B},
+  x=>{add(8,x,15);add(8,x+B,15);return 2*B},
+  x=>{for(let i=0;i<3;i++)add(8,x+i*B,15);return 3*B},
+  x=>{const n=ri(5,7),k=ri(3,n-2);for(let i=0;i<n;i++)add(1,x+i*B,15);add(8,x+k*B,45);return n*B},
+  x=>{add(35,x,15);for(let i=0;i<3;i++)add(8,x+(2+i)*B,15);return 6*B},
+  x=>{add(8,x,15);add(8,x+2*B,15);return 3*B}];
+ const cube=(x0,x1)=>{let x=x0;const ps=d>=3?cp:cp.slice(0,5);const mt=[ri(0,ps.length-1),ri(0,ps.length-1),ri(0,ps.length-1)];let n=0;while(x<x1-300){x=sn(x);x+=ps[R()<.25?ri(0,ps.length-1):mt[n++%3]](x)+gap()}};
+ const cave=(x0,x1,m)=>{const gap=5,per=ri(4,8)*bt/B,amp=(10-gap)/2*(.5+R()*.5),ph0=R()*6.28;let f0=2,i=0;
+  for(let x=x0+360;x<x1-240;x+=B,i++){const c=(10-gap)/2+amp*Math.sin(ph0+i*6.283/per)*(i<10?i/10:1);let f=Math.round(c);f=Math.max(f0-1,Math.min(f0+1,f));f0=f;const cr=10-gap-f;
+   for(let j=0;j<f;j++)add(1,x,15+j*B);for(let j=0;j<cr;j++)add(1,x,285-j*B);
+   if(m=='ship'&&d>1&&i%Math.max(1,Math.round(bt/B*4))==0&&R()<.4)add(8,x,15+f*B)}};
+ const corr=(x0,x1,m)=>{if(m=='ship'||m=='wave'||m=='ufo'||m=='swing')return cave(x0,x1,m);let x=x0+360;const TOP=285,gp=m=='wave'?6:5;
+  while(x<x1-240){const w=ri(1,2),h=ri(0,3),c=ri(0,Math.min(m=='wave'?2:3,4-h));
+   for(let i=0;i<w;i++){const xx=x+i*B;
+    for(let j=0;j<h;j++)add(1,xx,15+j*B);for(let j=0;j<c;j++)add(1,xx,TOP-j*B);
+    if(m!='wave'&&d>1){if(h)add(8,xx,15+h*B);else if(R()<.3)add(8,xx,15);if(c)add(8,xx,TOP-c*B,180)}}
+   x=sn(x+(w+ri(gp,gp+3))*B*sc)}};
+ const A={bg:h2r(th.bg),ground:h2r(th.ground),line:h2r(th.line),obj:h2r(th.obj)};
+ const Bp={bg:mix(th.bg,th.obj,.45),ground:mix(th.ground,th.obj,.4),line:h2r(th.acc),obj:mix(th.obj,th.acc,.5)};
+ const ctrig=(x,k)=>{const P=k%2?Bp:A,ch=[[1000,P.bg],[1001,P.ground],[1009,P.ground],[1002,P.line],[1004,P.obj]];
+  ch.forEach(([c,v],i)=>add(899,x+i,345,0,`,7,${v[0]},8,${v[1]},9,${v[2]},10,1.5,23,${c},35,1`))};
+ let x=sn(450,8),k=0,mode='cube';const secs=[],SG=[];
+ while(x<len){
+  const isC=mode=='cube'||mode=='robot',end=Math.min(sn(x+(isC?ri(1100,2000):ri(2000,3200)),8),len);
+  if(k>0){if(isC)[45,135,225].forEach(y=>add(PID[mode],x,y));else add(PID[mode],x,45);if($('#shift').checked)ctrig(x-90,k);add(1520,x-90,405,0,',75,3,76,0,10,.4')}
+  isC?cube(x+(k?240:0),end):corr(x,end,mode);secs.push(mode);SG.push([mode,x,end]);
+  x=sn(end+120,8);k++;mode=isC&&modes.length?modes[ri(0,modes.length-1)]:'cube'}
+ const d3=$('#d3').checked,dc=d3?0:+$('#deco').value,DC=',121,1,24,1,21,1002';
+ if(0){for(let px=150;px<len+300;px+=[0,260,150,90][dc]+ri(0,80)){const n=ri(3,9);for(let j=0;j<n;j++)add(1,px,15+j*B,0,DC);add(40,px,n*B+8,0,DC);if(R()<.5){const m=ri(2,Math.max(2,n-2));for(let j=0;j<m;j++)add(1,px+B,15+j*B,0,DC)}}
+  for(let px=200;px<len+300;px+=[0,200,120,70][dc]+ri(0,60))add(1,px,ri(150,285),0,DC+',32,0.3')}
+ if(dc){const D2=',121,1,24,1,21,2',D3=',121,1,24,3,21,1',st=[0,150,90,55][dc];
+  for(let px=150;px<len+300;px+=st+ri(0,80)){
+   if(STY=='city'){const n=ri(4,10),w=ri(1,3);for(let i=0;i<w;i++){for(let j=0;j<n;j++)add(1,px+i*B,15+j*B,0,D2);add(40,px+i*B,n*B+8,0,D2)}add(8,px+B*(w-1)/2,n*B+30,0,D2+',32,.6');for(let j=1;j<n;j+=2)add(1,px+B*(w-1)/2,15+j*B,0,D3+',32,.25')}
+   else if(STY=='mount'){const s=ri(3,8),t=(s*.6).toFixed(1);add(8,px,15*s,0,D2+',32,'+s);add(8,px+ri(20,60),15*t,0,D3+',32,'+t)}
+   else if(STY=='tree'||STY=='snow'){const n=ri(2,4);for(let j=0;j<n*2;j++)add(1,px,8+j*15,0,D2+',32,.5');for(let t=0;t<3;t++)add(8,px,n*B+30+t*40,0,D2+',32,'+(3-t*.7).toFixed(1))}
+   else{const n=ri(3,8);for(let j=0;j<n*2;j++)add(1,px+Math.sin(j)*4,8+j*15,0,D2+',32,.5');add(1,px,n*30+8,0,D3+',32,.4')}}
+  for(let px=100;px<len+300;px+=[0,120,70,45][dc]+ri(0,30)){add(1,px,5,0,D3+',32,.3');if(STY!='sea'&&R()<.5){const h=ri(1,3);add(8,px+15,315-15*h,180,D2+',32,'+h)}}
+  for(let px=200;px<len+300;px+=[0,110,70,40][dc]+ri(0,60))add(STY=='sea'||STY=='snow'?1:8,px,ri(60,285),0,D3+',32,'+(.15+R()*.25).toFixed(2))}
+ if(0){const dur=len/sp;
+  [[11,.8,6,10,3],[12,.55,3,6,4],[13,.3,2,3.5,2]].forEach(([g,f,s0,s1,ch],li)=>{const G=`,57,${g},24,${1+li*2},121,1,21,${ch}`;
+   for(let px=0;px<(1-f)*len+700;px+=ri(80,170)-li*15){const s=+(s0+R()*(s1-s0)).toFixed(1);
+    if(STY=='city'){const n=Math.round(s*1.3);for(let j=0;j<n;j++)add(1,px,15+j*B,0,G)}
+    else if(li==0)add(8,px,15*s,0,G+',32,'+s);
+    else{const n=ri(1,2);for(let j=0;j<n*2;j++)add(1,px,8+j*15,0,G+',32,.5');for(let t=0;t<3;t++)add(8,px,n*B+t*s*10+15*s*(1-t*.2),0,G+',32,'+(s*(1-t*.2)).toFixed(1))}
+    if(R()<.5)add(1,px+ri(-40,40),ri(120,290),0,G+',32,.18')}
+   add(901,150,345+li*30,0,`,28,${Math.round(f*len)},10,${dur.toFixed(2)},51,${g}`)})}
+ const nb=Math.floor((len-off)/bt),T4=bt*4/sp,pc=[h2r(th.bg),mix(th.bg,th.acc,.2),mix(th.bg,th.obj,.3)];
+ for(let b=8;b<nb;b+=8){const x=off+b*bt,c=pc[(b/8)%3];add(899,x,435,0,`,7,${c[0]},8,${c[1]},9,${c[2]},10,${T4.toFixed(2)},23,1000,35,1`);
+  if(b%16==0)add(1520,x,465,0,',75,2,76,0,10,.35');
+  if(d3)[11,12,13].forEach((g,i)=>add(1007,x,525+i*30,0,`,35,${(b/8+i)%2?1:.55},10,${T4.toFixed(2)},51,${g}`))}
+ for(let b=4;b<nb;b+=4){const x=off+b*bt;add(1913,x,495,0,',371,1.06,10,.08');add(1913,x+bt*.5,495,0,',371,1,10,.3')}
+ if(d3)for(let b=2;b<nb;b+=2){const x=off+b*bt;add(901,x,615,0,',29,8,10,.1,51,12');add(901,x+bt*.4,615,0,',29,-8,10,.2,51,12')}
+ const ma=(a,b,t)=>a.map((v,i)=>Math.round(v+(b[i]-v)*t)),bg0=h2r(th.bg),sky=[0,1,2,3,4,5].map(i=>i<3?ma(mix(th.bg,'#000000',.45),bg0,i/2):ma(bg0,mix(th.bg,th.line,.42),(i-2)/3));
+ if(d3){const dur=len/sp,ac2=h2r(th.acc),lk=(g,y)=>{add(901,1,y,0,`,28,-180,10,0,51,${g}`);add(901,2,y+30,0,`,28,${Math.round(len)},10,${dur.toFixed(2)},51,${g}`)};
+  for(let r=0;r<7;r++)for(let c=0;c<14;c++)add(1,c*60+30,30+r*60,0,`,57,20,24,1,25,-9,121,1,32,2,21,${10-Math.min(r,5)}`);lk(20,600);
+  const mt=(px,s,G,ch)=>{add(8,px,15*s,0,G+`,21,${ch},32,${s}`);if(STY=='snow'){const c=s*.4;add(8,px,30*s-15*c,0,G+`,21,11,32,${c.toFixed(2)}`)}},
+  pine=(px,s,G,ch)=>{add(1,px,8,0,G+`,21,${ch},32,.5`);add(1,px,23,0,G+`,21,${ch},32,.5`);for(let t=0;t<3;t++){const a=s*(1-t*.22),b=B+t*s*9;add(8,px,b+15*a,0,G+`,21,${ch},32,${a.toFixed(2)}`);if(STY=='snow')add(8,px,b+23*a,0,G+`,21,11,32,${(.45*a).toFixed(2)}`)}},
+  bl=(px,s,G,ch)=>{for(let j=0;j<Math.round(s*1.3);j++)add(1,px,15+j*B,0,G+`,21,${ch}`)};
+  [[10,.92,12,8,12,150],[11,.8,3,6,9,130],[12,.55,4,3.5,5,100],[13,.3,13,2.5,3.5,85]].forEach(([g,f,ch,s0,s1,st],li)=>{const G=`,57,${g},24,${1+li*2},121,1`;
+   for(let px=0;px<(1-f)*len+700;px+=st+ri(0,40)){const s=+(s0+R()*(s1-s0)).toFixed(1);(STY=='city'?bl:li<2?mt:pine)(px,s,G,ch)}
+   add(901,1,345+li*30,0,`,28,${Math.round(f*len)},10,${dur.toFixed(2)},51,${g}`)});
+  if(STY=='snow'){[[21,.2,3.2,9,5],[22,.14,4.8,12,6],[23,.1,7,16,7]].forEach(([g,s,T,nc,nr],i)=>[0,1].forEach(ph=>{const gg=g+ph*3,G2=`,57,${gg},24,${9+i*2},121,1,21,11,32,${s}`;
+    for(let a=0;a<nc;a++)for(let q=0;q<nr;q++)add(1,(a+(q%2)*.5+ph*.25)*780/nc+Math.sin(a*7+q*3+ph)*12,405+q*430/nr+Math.cos(a*5+q*2)*12,0,G2);
+    lk(gg,720+gg*8);
+    for(let t=3+ph*T/2;t<dur;t+=T){const x=t*sp;add(901,x,900+gg*8,0,`,28,40,29,-840,10,${T},51,${gg}`);add(901,x+T*sp-1,930+gg*8,0,`,28,-40,29,840,10,0,51,${gg}`)}}));
+   for(let b=8;b<nb;b+=8)[21,22,23,24,25,26].forEach((g,i)=>add(1007,off+b*bt,1000+i*10,0,`,35,${(b/8)%2?1:.5},10,${T4.toFixed(2)},51,${g}`))}
+  for(let b=4;b<nb;b+=4){const x=off+b*bt,sg=(b/4)%2?6:-6;[10,11,13].forEach((g,i)=>add(901,x,1100+i*10,0,`,29,${sg},10,${T4.toFixed(2)},51,${g},30,1`))}
+  for(let b=2;b<nb;b+=2)add(1006,off+b*bt,1160,0,`,7,${ac2[0]},8,${ac2[1]},9,${ac2[2]},45,.02,46,0,47,.5,51,11,52,0,35,1`);
+  for(let b=8;b<nb;b+=8){const t=(b/8)%2?.28:0;sky.forEach((c,i)=>{const v=ma(c,ac2,t*(i/5));add(899,off+b*bt,1200+i*10,0,`,7,${v[0]},8,${v[1]},9,${v[2]},10,${T4.toFixed(2)},2
