@@ -23,9 +23,10 @@ jobs:
 
       - name: Preparar o app web
         run: |
-          mkdir -p www
-          cp index.html www/index.html
-          cat > www/shim.js <<'EOF'
+                    mkdir -p www
+          f=$(ls *.html 2>/dev/null | head -1)
+          if [ -z "$f" ]; then echo "Nenhum .html na raiz do repositório"; exit 1; fi
+          cp "$f" www/index.html
           (function(){
             var C=window.Capacitor;
             if(!C||!C.Plugins)return;
