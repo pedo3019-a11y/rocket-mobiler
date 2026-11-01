@@ -15,6 +15,11 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
+      - name: Ver arquivos
+        run: |
+          ls -la
+          ls -la www
+          cat capacitor.config.json
       - run: npm install
       - run: npx cap add android
       - run: npx cap sync android
