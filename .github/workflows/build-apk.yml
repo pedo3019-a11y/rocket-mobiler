@@ -15,11 +15,11 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
-      - name: Ver arquivos
+      - name: Preparar www
         run: |
-          ls -la
-          ls -la www
-          cat capacitor.config.json
+          mkdir -p www
+          cp index.html www/index.html
+          ls -la . www
       - run: npm install
       - run: npx cap add android
       - run: npx cap sync android
